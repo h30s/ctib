@@ -43,6 +43,7 @@ htmlcov/
 # Logs
 logs/
 *.log
+server_log.txt
 
 # Project specific
 # (We will commit data/seed/*.json so others can run the demo)
