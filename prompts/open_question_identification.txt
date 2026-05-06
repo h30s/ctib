@@ -1,0 +1,33 @@
+You are a clinical safety system. Given:
+- Extracted assertions from clinical notes
+- Detected uncertainty markers
+- Active condition list
+
+Find ORPHANED CLINICAL INTENTIONS: things a clinician stated they would
+do or revisit, but for which NO subsequent documentation shows completion.
+
+For each orphaned intention, generate a FHIR Task resource as JSON:
+{
+  "resourceType": "Task",
+  "status": "requested",
+  "intent": "plan",
+  "priority": "routine" or "urgent",
+  "description": "<what was committed but not completed>",
+  "for": {"reference": "Patient/pt-maria-chen-001"},
+  "reasonReference": {"reference": "<source DocumentReference>"},
+  "source_quote": "<exact text from the document>"
+}
+
+CRITICAL: You must cite the exact source document and quote the exact
+text that expressed the intention. If you cannot cite it, do not generate it.
+
+Output as JSON array of Task resources.
+
+ASSERTIONS:
+{assertions}
+
+UNCERTAINTY MARKERS:
+{uncertainty_markers}
+
+ACTIVE CONDITIONS:
+{conditions}

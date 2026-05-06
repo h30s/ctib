@@ -1,0 +1,30 @@
+{
+  "name": "Dissonance-MCP",
+  "version": "1.0",
+  "description": "Cross-signal conflict detection and severity classification. Identifies where clinical signals from different MCP servers disagree or represent converging risks.",
+  "tools": [
+    {
+      "name": "detect_cross_signal_conflicts",
+      "description": "Detect conflicts between ClinicalSignalEnvelopes from different MCP servers. Uses both rule-based detection and LLM classification. Returns DissonanceRegistry with classified conflicts.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "envelopes": {"type": "array", "description": "ClinicalSignalEnvelope dicts from all MCP servers"}
+        },
+        "required": ["envelopes"]
+      }
+    },
+    {
+      "name": "classify_conflict_severity",
+      "description": "Classify the severity of a single conflict using LLM analysis. Returns the conflict with added LLM classification.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "conflict": {"type": "object", "description": "A single classified conflict"},
+          "envelopes": {"type": "array", "description": "Related ClinicalSignalEnvelopes"}
+        },
+        "required": ["conflict", "envelopes"]
+      }
+    }
+  ]
+}

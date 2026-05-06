@@ -1,0 +1,33 @@
+{
+  "name": "PharmSafety-MCP",
+  "version": "1.0",
+  "description": "Medication reconciliation and interaction detection for care transitions",
+  "tools": [
+    {
+      "name": "reconcile_medications",
+      "description": "Reconcile active medications against allergies, conditions, and lab trends. Returns ClinicalSignalEnvelope with medication safety signals including nephrotoxic agent tracking and renal trajectory analysis.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "medication_requests": {"type": "array", "description": "FHIR MedicationRequest resources"},
+          "allergies": {"type": "array", "description": "FHIR AllergyIntolerance resources"},
+          "conditions": {"type": "array", "description": "FHIR Condition resources"},
+          "lab_observations": {"type": "array", "description": "FHIR Observation resources (laboratory category)"}
+        },
+        "required": ["medication_requests", "allergies", "conditions", "lab_observations"]
+      }
+    },
+    {
+      "name": "detect_interactions",
+      "description": "Deep drug interaction analysis using LLM synthesis of the drug-patient-trajectory triple. Requires Gemini API.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "reconciled_result": {"type": "object", "description": "Output from reconcile_medications"},
+          "renal_context": {"type": "object", "description": "Renal function context including creatinine trajectory"}
+        },
+        "required": ["reconciled_result", "renal_context"]
+      }
+    }
+  ]
+}

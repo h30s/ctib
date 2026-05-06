@@ -1,0 +1,79 @@
+[
+  {
+    "resourceType": "MedicationRequest",
+    "id": "medrq-cefepime-001",
+    "status": "active",
+    "intent": "order",
+    "medicationCodeableConcept": {"coding": [{"system": "http://www.nlm.nih.gov/research/umls/rxnorm", "code": "309090", "display": "Cefepime"}], "text": "Cefepime 2g IV q12h"},
+    "subject": {"reference": "Patient/pt-maria-chen-001"},
+    "encounter": {"reference": "Encounter/enc-icu-day5"},
+    "dosageInstruction": [{"text": "2g IV every 12 hours", "timing": {"repeat": {"frequency": 1, "period": 12, "periodUnit": "h"}}, "route": {"coding": [{"system": "http://snomed.info/sct", "code": "47625008", "display": "Intravenous route"}]}}],
+    "note": [{"text": "KEY: nephrotoxic antibiotic — monitor renal function"}]
+  },
+  {
+    "resourceType": "MedicationRequest",
+    "id": "medrq-metoprolol-001",
+    "status": "active",
+    "intent": "order",
+    "medicationCodeableConcept": {"coding": [{"system": "http://www.nlm.nih.gov/research/umls/rxnorm", "code": "866924", "display": "Metoprolol Tartrate"}], "text": "Metoprolol tartrate 25mg PO BID"},
+    "subject": {"reference": "Patient/pt-maria-chen-001"},
+    "encounter": {"reference": "Encounter/enc-icu-day5"},
+    "dosageInstruction": [{"text": "25mg by mouth twice daily", "route": {"coding": [{"system": "http://snomed.info/sct", "code": "26643006", "display": "Oral route"}]}}],
+    "note": [{"text": "Post-CABG beta-blocker"}]
+  },
+  {
+    "resourceType": "MedicationRequest",
+    "id": "medrq-lisinopril-001",
+    "status": "active",
+    "intent": "order",
+    "medicationCodeableConcept": {"coding": [{"system": "http://www.nlm.nih.gov/research/umls/rxnorm", "code": "314076", "display": "Lisinopril"}], "text": "Lisinopril 10mg PO daily"},
+    "subject": {"reference": "Patient/pt-maria-chen-001"},
+    "encounter": {"reference": "Encounter/enc-icu-day5"},
+    "dosageInstruction": [{"text": "10mg by mouth daily", "route": {"coding": [{"system": "http://snomed.info/sct", "code": "26643006", "display": "Oral route"}]}}],
+    "note": [{"text": "Held post-op, restarted Day 3"}]
+  },
+  {
+    "resourceType": "MedicationRequest",
+    "id": "medrq-atorvastatin-001",
+    "status": "active",
+    "intent": "order",
+    "medicationCodeableConcept": {"coding": [{"system": "http://www.nlm.nih.gov/research/umls/rxnorm", "code": "259255", "display": "Atorvastatin"}], "text": "Atorvastatin 80mg PO daily"},
+    "subject": {"reference": "Patient/pt-maria-chen-001"},
+    "encounter": {"reference": "Encounter/enc-icu-day5"},
+    "dosageInstruction": [{"text": "80mg by mouth daily"}],
+    "note": [{"text": "High-intensity statin therapy"}]
+  },
+  {
+    "resourceType": "MedicationRequest",
+    "id": "medrq-metformin-001",
+    "status": "active",
+    "intent": "order",
+    "medicationCodeableConcept": {"coding": [{"system": "http://www.nlm.nih.gov/research/umls/rxnorm", "code": "861004", "display": "Metformin"}], "text": "Metformin 500mg PO BID"},
+    "subject": {"reference": "Patient/pt-maria-chen-001"},
+    "encounter": {"reference": "Encounter/enc-icu-day5"},
+    "dosageInstruction": [{"text": "500mg by mouth twice daily"}],
+    "note": [{"text": "Held peri-op, restarted Day 4"}]
+  },
+  {
+    "resourceType": "MedicationRequest",
+    "id": "medrq-aspirin-001",
+    "status": "active",
+    "intent": "order",
+    "medicationCodeableConcept": {"coding": [{"system": "http://www.nlm.nih.gov/research/umls/rxnorm", "code": "243670", "display": "Aspirin"}], "text": "Aspirin 81mg PO daily"},
+    "subject": {"reference": "Patient/pt-maria-chen-001"},
+    "encounter": {"reference": "Encounter/enc-icu-day5"},
+    "dosageInstruction": [{"text": "81mg by mouth daily"}],
+    "note": [{"text": "Post-CABG antiplatelet"}]
+  },
+  {
+    "resourceType": "MedicationRequest",
+    "id": "medrq-heparin-001",
+    "status": "active",
+    "intent": "order",
+    "medicationCodeableConcept": {"coding": [{"system": "http://www.nlm.nih.gov/research/umls/rxnorm", "code": "235473", "display": "Heparin"}], "text": "Heparin 5000u SQ q8h"},
+    "subject": {"reference": "Patient/pt-maria-chen-001"},
+    "encounter": {"reference": "Encounter/enc-icu-day5"},
+    "dosageInstruction": [{"text": "5000 units subcutaneous every 8 hours", "route": {"coding": [{"system": "http://snomed.info/sct", "code": "34206005", "display": "Subcutaneous route"}]}}],
+    "note": [{"text": "DVT prophylaxis"}]
+  }
+]

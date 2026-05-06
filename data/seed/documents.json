@@ -1,0 +1,80 @@
+[
+  {
+    "resourceType": "DocumentReference",
+    "id": "doc-progress-day3",
+    "status": "current",
+    "type": {
+      "coding": [
+        {
+          "system": "http://loinc.org",
+          "code": "11506-3",
+          "display": "Progress note"
+        }
+      ]
+    },
+    "subject": {
+      "reference": "Patient/pt-maria-chen-001"
+    },
+    "date": "2026-04-29T10:00:00Z",
+    "content": [
+      {
+        "attachment": {
+          "contentType": "text/plain",
+          "data": "UG9zdC1vcCBkYXkgMy4gUGF0aWVudCBwcm9ncmVzc2luZyB3ZWxsIHMvcCBDQUJHIHgzLgpIZW1vZHluYW1pY3Mgc3RhYmxlLiBXZWFuaW5nIE8yLCBjdXJyZW50bHkgMkwgTkMgd2l0aCBzYXQgOTUlLgoKTGFiczogV0JDIHRyZW5kaW5nIHVwIHNsaWdodGx5LCAxMC4zIHRvZGF5LiBDUlAgMTgsIHVwIGZyb20gMTIgeWVzdGVyZGF5LgpJbmZsYW1tYXRvcnkgbWFya2VycyBtaWxkbHkgZWxldmF0ZWQuIERpc2N1c3NlZCBicmllZmx5IHdpdGggY2FyZGlvbG9neQpyZTogcG9zdC1vcCBwZXJpY2FyZGl0aXMgdnMuIG5vcm1hbCBwb3N0LXN1cmdpY2FsIGluZmxhbW1hdG9yeSByZXNwb25zZS4KV2lsbCByZXZpc2l0IGlmIENSUCBjb250aW51ZXMgdG8gdHJlbmQuIFJoZXVtYXRvbG9neSBub3QgeWV0IGZvcm1hbGx5CmNvbnN1bHRlZCBidXQgbWF5IGJlIHdhcnJhbnRlZC4KClJlbmFsOiBDcmVhdGluaW5lIHN0YWJsZSBhdCAwLjg1LiBDb250aW51ZSBjdXJyZW50IGZsdWlkIG1hbmFnZW1lbnQuCkNlZmVwaW1lIGRheSAyIGZvciBlbXBpcmljIGNvdmVyYWdlLCBjdWx0dXJlcyBwZW5kaW5nLgpQbGFuOiBDb250aW51ZSBjdXJyZW50IG1hbmFnZW1lbnQuIFRhcmdldCBzdGVwLWRvd24gdHJhbnNmZXIgRGF5IDUu"
+        }
+      }
+    ]
+  },
+  {
+    "resourceType": "DocumentReference",
+    "id": "doc-cardiology-day3",
+    "status": "current",
+    "type": {
+      "coding": [
+        {
+          "system": "http://loinc.org",
+          "code": "11488-4",
+          "display": "Consultation note"
+        }
+      ]
+    },
+    "subject": {
+      "reference": "Patient/pt-maria-chen-001"
+    },
+    "date": "2026-04-29T14:00:00Z",
+    "content": [
+      {
+        "attachment": {
+          "contentType": "text/plain",
+          "data": "UmV2aWV3ZWQgbGFiczogQ1JQIDE4LCBXQkMgMTAuMy4gRWNobyBEYXkgMiBzaG93cyBubyBwZXJpY2FyZGlhbAplZmZ1c2lvbi4gRUYgNTUlLCBubyB3YWxsIG1vdGlvbiBhYm5vcm1hbGl0aWVzLgoKQXNzZXNzbWVudDogSW5mbGFtbWF0b3J5IG1hcmtlcnMgbGlrZWx5IG5vcm1hbCBwb3N0LXN1cmdpY2FsIHJlc3BvbnNlLgpDYW5ub3QgZnVsbHkgZXhjbHVkZSBlYXJseSBwZXJpY2FyZGl0aXMuCgpSZWNvbW1lbmQ6IFRyZW5kIENSUCBvdmVyIG5leHQgNDgtNzJoLiBJZiBwZXJzaXN0ZW50IGVsZXZhdGlvbiBvcgpuZXcgc3ltcHRvbXMsIGNvbnNpZGVyIGZvcm1hbCByaGV1bWF0b2xvZ3kgY29uc3VsdGF0aW9uIGFuZCBjb2xjaGljaW5lLg=="
+        }
+      }
+    ]
+  },
+  {
+    "resourceType": "DocumentReference",
+    "id": "doc-nursing-day5",
+    "status": "current",
+    "type": {
+      "coding": [
+        {
+          "system": "http://loinc.org",
+          "code": "34745-0",
+          "display": "Nurse Note"
+        }
+      ]
+    },
+    "subject": {
+      "reference": "Patient/pt-maria-chen-001"
+    },
+    "date": "2026-05-02T02:00:00Z",
+    "content": [
+      {
+        "attachment": {
+          "contentType": "text/plain",
+          "data": "TmlnaHQgc2hpZnQgaGFuZG9mZjogTWFyaWEgQ2hlbiwgcG9zdC1vcCBEYXkgNSBDQUJHLgpEYXkgdGVhbSBwbGFucyBzdGVwLWRvd24gdHJhbnNmZXIgb3Zlcm5pZ2h0IGlmIGJlZCBhdmFpbGFibGUuClZpdGFscyB0cmVuZGluZyBzbGlnaHRseSDigJQgSFIgdXAgZnJvbSA3OCB0byA5MiBvdmVyIDQ4aCwgUlIgMjEuCk1EIGF3YXJlLCBubyBuZXcgb3JkZXJzLiBQYXRpZW50IHJlcG9ydHMgbWlsZCBjaGVzdCBkaXNjb21mb3J0LgpObyBuZXcgbGFicyBvcmRlcmVkIHRvbmlnaHQuIENlZmVwaW1lIGR1ZSBhdCAwMjowMC4="
+        }
+      }
+    ]
+  }
+]

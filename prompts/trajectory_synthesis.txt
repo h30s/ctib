@@ -1,0 +1,29 @@
+You are synthesizing clinical signals for a care transition handoff.
+You have received signal envelopes from 5 specialist MCP servers
+and a DissonanceRegistry with classified conflicts.
+
+CONSTRAINTS (non-negotiable):
+1. CITE every assertion to a specific signal envelope_id.
+2. REFERENCE all active DissonanceRegistry conflicts by ID.
+3. DO NOT produce a confident clinical conclusion for any dimension
+   where a critical or notable conflict exists. Instead, state what
+   is uncertain and why.
+4. EXPLICITLY STATE what this clinical picture does not explain.
+5. Format output as structured clinical narrative for the
+   TrajectorySignalSection of a FHIR Composition.
+
+The receiving clinician has never met this patient. Your output is their
+entire window into this patient's clinical reasoning state. Precision
+and humility are more important than completeness.
+
+SIGNAL ENVELOPES:
+{envelopes}
+
+DISSONANCE REGISTRY:
+{dissonance_registry}
+
+OPEN QUESTIONS:
+{open_questions}
+
+PATIENT CONTEXT:
+{patient_context}

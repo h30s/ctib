@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CTIB — Clinical Transition Intelligence Bus</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Bebas+Neue&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #080808;
+  --bg2: #0f0f0f;
+  --bg3: #141414;
+  --card: #111111;
+  --border: rgba(255,255,255,0.07);
+  --border2: rgba(255,255,255,0.13);
+  --txt: #f0f0f0;
+  --txt2: #888;
+  --txt3: #444;
+  --lime: #c8ff00;
+  --lime2: rgba(200,255,0,0.08);
+  --lime3: rgba(200,255,0,0.15);
+  --red: #ff3c3c;
+  --red2: rgba(255,60,60,0.08);
+  --cyan: #00e5ff;
+  --cyan2: rgba(0,229,255,0.08);
+  --orange: #ff6b00;
+  --orange2: rgba(255,107,0,0.08);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Syne',sans-serif;background:var(--bg);color:var(--txt);overflow-x:hidden;cursor:crosshair}
+body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.1) 2px,rgba(0,0,0,0.1) 4px);pointer-events:none;z-index:9998}
+.cursor{width:8px;height:8px;border-radius:50%;background:var(--lime);position:fixed;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);mix-blend-mode:difference}
+.cursor-ring{width:32px;height:32px;border:1px solid var(--lime);border-radius:50%;position:fixed;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:width .25s,height .25s,opacity .2s;opacity:.5}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:0 2.5rem;height:58px;border-bottom:1px solid var(--border);background:rgba(8,8,8,0.92);backdrop-filter:blur(20px)}
+.nav-logo{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;letter-spacing:.08em;color:var(--lime);text-decoration:none}
+.nav-links{display:flex;align-items:center;gap:2.5rem;list-style:none}
+.nav-links a{font-family:'Space Mono',monospace;font-size:.63rem;letter-spacing:.14em;text-transform:uppercase;color:var(--txt2);text-decoration:none;transition:color .2s}
+.nav-links a:hover{color:var(--lime)}
+.nav-status{display:flex;align-items:center;gap:7px;font-family:'Space Mono',monospace;font-size:.6rem;color:var(--lime);letter-spacing:.1em}
+.status-dot{width:6px;height:6px;border-radius:50%;background:var(--lime);animation:blink 1.4s step-end infinite}
+@keyframes blink{50%{opacity:0}}
+
+/* HERO */
+.hero{min-height:100vh;padding:88px 2.5rem 0;display:grid;grid-template-rows:1fr auto;position:relative;overflow:hidden}
+.hero-bg-text{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:'Bebas Neue',sans-serif;font-size:clamp(100px,18vw,260px);letter-spacing:-.02em;color:rgba(255,255,255,.016);white-space:nowrap;pointer-events:none;user-select:none;line-height:1}
+.hero::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(200,255,0,.022) 1px,transparent 1px),linear-gradient(90deg,rgba(200,255,0,.022) 1px,transparent 1px);background-size:80px 80px;pointer-events:none}
+.hero-content{display:grid;grid-template-columns:1fr 420px;gap:3rem;align-items:center;padding-top:3rem;position:relative;z-index:2}
+.hero-tag{font-family:'Space Mono',monospace;font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:var(--lime);margin-bottom:1.2rem;display:flex;align-items:center;gap:10px}
+.hero-tag::before{content:'>';color:var(--lime);animation:blink 1s step-end infinite}
+.hero-h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(3.5rem,8vw,7.5rem);line-height:.92;letter-spacing:.01em;color:var(--txt);margin-bottom:1.6rem}
+.hero-h1 .accent{color:var(--lime)}
+.hero-h1 .stroke{-webkit-text-stroke:1px var(--txt);color:transparent}
+.hero-desc{font-family:'Space Mono',monospace;font-size:.75rem;line-height:1.9;color:var(--txt2);max-width:520px;margin-bottom:2.5rem}
+.hero-actions{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.btn-main{background:var(--lime);color:#000;font-family:'Space Mono',monospace;font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:14px 28px;border:none;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:10px;transition:all .15s;clip-path:polygon(0 0,calc(100% - 10px) 0,100% 10px,100% 100%,0 100%)}
+.btn-main:hover{transform:translate(-2px,-2px);box-shadow:4px 4px 0 var(--lime3)}
+.btn-outline{background:transparent;color:var(--txt2);font-family:'Space Mono',monospace;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;padding:13px 24px;border:1px solid var(--border2);cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:8px;transition:all .2s}
+.btn-outline:hover{border-color:var(--lime);color:var(--lime)}
+
+/* TERMINAL */
+.terminal{background:var(--bg2);border:1px solid var(--border2);position:relative;overflow:hidden}
+.terminal::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:var(--lime)}
+.term-bar{padding:10px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;background:var(--bg3)}
+.term-circle{width:9px;height:9px;border-radius:50%}
+.term-title{font-family:'Space Mono',monospace;font-size:.6rem;color:var(--txt3);letter-spacing:.1em;margin-left:auto;margin-right:auto}
+.term-body{padding:16px;font-family:'Space Mono',monospace;font-size:.63rem;line-height:1.8}
+.t-line{display:flex;gap:8px;margin-bottom:2px}
+.t-prompt{color:var(--lime);flex-shrink:0}
+.t-cmd{color:var(--txt)}
+.t-out{color:var(--txt2);padding-left:16px}
+.t-ok{color:var(--lime)}
+.t-warn{color:var(--orange)}
+.t-err{color:var(--red)}
+.t-cyan{color:var(--cyan)}
+.t-dim{color:var(--txt3)}
+.t-cursor{display:inline-block;width:6px;height:11px;background:var(--lime);animation:blink 1s step-end infinite;vertical-align:middle}
+
+/* MARQUEE */
+.marquee-wrap{border-top:1px solid var(--border);border-bottom:1px solid var(--border);overflow:hidden;background:var(--bg2);padding:10px 0;margin-top:2rem}
+.marquee-inner{display:flex;animation:marquee 22s linear infinite;white-space:nowrap}
+.marquee-inner:hover{animation-play-state:paused}
+.m-item{font-family:'Space Mono',monospace;font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;color:var(--txt3);padding:0 2.5rem;display:flex;align-items:center;gap:1rem;flex-shrink:0}
+.m-item .m-dot{color:var(--lime)}
+@keyframes marquee{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+
+/* STATS */
+.stats{display:grid;grid-template-columns:repeat(5,1fr);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.stat{padding:2rem 1.5rem;border-right:1px solid var(--border);position:relative;overflow:hidden;transition:background .2s}
+.stat:hover{background:rgba(200,255,0,.03)}
+.stat:last-child{border-right:none}
+.stat-n{font-family:'Bebas Neue',sans-serif;font-size:3.5rem;line-height:1;letter-spacing:.02em;color:var(--txt);display:block;transition:color .1s,transform .1s}
+.stat-n .unit{font-size:1.8rem;color:var(--lime)}
+.stat-l{font-family:'Space Mono',monospace;font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;color:var(--txt3);margin-top:4px;display:block}
+.stat-corner{position:absolute;top:10px;right:10px;width:16px;height:16px;border-top:1px solid var(--lime);border-right:1px solid var(--lime);opacity:.4}
+
+/* SECTION */
+.section{padding:80px 2.5rem;position:relative}
+.section-inner{max-width:1280px;margin:0 auto}
+.section-kicker{font-family:'Space Mono',monospace;font-size:.58rem;letter-spacing:.22em;text-transform:uppercase;color:var(--lime);margin-bottom:.8rem;display:flex;align-items:center;gap:8px}
+.section-kicker::before{content:'//';color:var(--txt3)}
+.section-h{font-family:'Bebas Neue',sans-serif;font-size:clamp(2.5rem,5vw,5rem);line-height:.95;letter-spacing:.02em;color:var(--txt);margin-bottom:.6rem}
+.section-h .accent{color:var(--lime)}
+.section-h .stroke{-webkit-text-stroke:1px rgba(255,255,255,.3);color:transparent}
+.section-sub{font-family:'Space Mono',monospace;font-size:.72rem;line-height:1.85;color:var(--txt2);max-width:520px;margin-bottom:3rem}
+
+/* ARCH */
+.arch-layout{display:grid;grid-template-columns:1fr 1fr;gap:3rem;margin-top:3rem}
+.pipe-flow{display:flex;flex-direction:column;gap:0;align-items:stretch}
+.pf-node{border:1px solid var(--border2);padding:14px 18px;display:flex;align-items:center;gap:12px;position:relative;transition:all .2s;cursor:default;background:var(--card)}
+.pf-node:hover{border-color:var(--lime);background:var(--lime2)}
+.pf-node:hover .pf-glyph{color:var(--lime)}
+.pf-node::before{content:attr(data-index);position:absolute;right:14px;top:50%;transform:translateY(-50%);font-family:'Space Mono',monospace;font-size:.55rem;color:var(--txt3);letter-spacing:.08em}
+.pf-glyph{font-family:'Space Mono',monospace;font-size:.85rem;color:var(--txt3);width:20px;flex-shrink:0;text-align:center;transition:color .2s}
+.pf-main{flex:1}
+.pf-name{font-family:'Syne',sans-serif;font-weight:700;font-size:.82rem;color:var(--txt)}
+.pf-desc{font-family:'Space Mono',monospace;font-size:.58rem;color:var(--txt3);margin-top:2px;letter-spacing:.05em}
+.pf-badge{font-family:'Space Mono',monospace;font-size:.52rem;letter-spacing:.1em;text-transform:uppercase;padding:3px 7px;border:1px solid;margin-right:24px}
+.badge-a2a{border-color:rgba(200,255,0,.3);color:var(--lime)}
+.badge-mcp{border-color:rgba(0,229,255,.25);color:var(--cyan)}
+.badge-llm{border-color:rgba(255,107,0,.3);color:var(--orange)}
+.pf-arrow-line{width:1px;height:20px;background:var(--border2);margin-left:20px}
+.pf-arrow-parallel{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.pf-arrow-parallel .pf-node{padding:10px 12px}
+.parallel-label{font-family:'Space Mono',monospace;font-size:.55rem;color:var(--txt3);letter-spacing:.12em;padding:4px 0 4px 20px}
+
+/* TABLE */
+.table-wrap{border:1px solid var(--border2);overflow:hidden}
+.table-head{display:grid;grid-template-columns:2fr .8fr .8fr 1.5fr;padding:10px 18px;background:var(--bg3);border-bottom:1px solid var(--border)}
+.th-cell{font-family:'Space Mono',monospace;font-size:.55rem;letter-spacing:.14em;text-transform:uppercase;color:var(--txt3)}
+.table-row{display:grid;grid-template-columns:2fr .8fr .8fr 1.5fr;padding:13px 18px;border-bottom:1px solid var(--border);align-items:center;transition:background .15s}
+.table-row:last-child{border-bottom:none}
+.table-row:hover{background:rgba(200,255,0,.025)}
+.tr-name{font-family:'Syne',sans-serif;font-weight:700;font-size:.78rem;color:var(--txt)}
+.tr-sub{font-family:'Space Mono',monospace;font-size:.56rem;color:var(--txt3)}
+.tr-cell{font-family:'Space Mono',monospace;font-size:.6rem;color:var(--txt2)}
+.llm-y{color:var(--lime)}
+.llm-n{color:var(--txt3)}
+
+/* FINDINGS */
+.findings-section{background:var(--bg2);border-top:1px solid var(--border)}
+.patient-band{display:flex;align-items:stretch;border:1px solid var(--border2);margin-bottom:2.5rem;overflow:hidden}
+.pb-avatar{width:70px;background:var(--lime);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:1.6rem;color:#000;letter-spacing:.05em;flex-shrink:0}
+.pb-info{padding:16px 20px;border-right:1px solid var(--border);flex:1}
+.pb-name{font-family:'Syne',sans-serif;font-weight:800;font-size:1.1rem;color:var(--txt)}
+.pb-meta{font-family:'Space Mono',monospace;font-size:.6rem;color:var(--txt3);margin-top:4px;letter-spacing:.08em}
+.pb-stat{padding:14px 20px;border-right:1px solid var(--border);display:flex;flex-direction:column;justify-content:center}
+.pb-val{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;color:var(--txt);line-height:1;letter-spacing:.04em}
+.pb-key{font-family:'Space Mono',monospace;font-size:.52rem;letter-spacing:.12em;text-transform:uppercase;color:var(--txt3);margin-top:3px}
+.pb-alert{padding:14px 20px;background:rgba(255,60,60,.07);border-left:2px solid var(--red);display:flex;flex-direction:column;justify-content:center}
+.pb-alert-txt{font-family:'Space Mono',monospace;font-size:.6rem;color:var(--red);letter-spacing:.08em}
+.pb-alert-num{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;color:var(--red);line-height:1}
+.findings-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border:1px solid var(--border2)}
+.finding{background:var(--bg2);padding:2rem;position:relative;overflow:hidden;transition:background .2s}
+.finding:hover{background:var(--bg3)}
+.finding::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.f-warn::before{background:var(--orange)}
+.f-info::before{background:var(--cyan)}
+.f-ok::before{background:var(--lime)}
+.f-num{font-family:'Bebas Neue',sans-serif;font-size:5rem;line-height:1;position:absolute;bottom:-.5rem;right:1rem;opacity:.05;color:var(--txt);letter-spacing:.02em}
+.f-type{font-family:'Space Mono',monospace;font-size:.55rem;letter-spacing:.14em;text-transform:uppercase;padding:4px 9px;display:inline-block;margin-bottom:1rem}
+.f-warn .f-type{background:var(--orange2);color:var(--orange);border:1px solid rgba(255,107,0,.3)}
+.f-info .f-type{background:var(--cyan2);color:var(--cyan);border:1px solid rgba(0,229,255,.25)}
+.f-ok .f-type{background:var(--lime2);color:var(--lime);border:1px solid rgba(200,255,0,.3)}
+.f-title{font-family:'Syne',sans-serif;font-weight:800;font-size:1.05rem;color:var(--txt);line-height:1.3;margin-bottom:.8rem}
+.f-body{font-family:'Space Mono',monospace;font-size:.63rem;line-height:1.85;color:var(--txt2)}
+
+/* API */
+.api-section{background:var(--bg);border-top:1px solid var(--border)}
+.api-layout{display:grid;grid-template-columns:1fr 1fr;gap:3rem;margin-top:3rem;align-items:start}
+.api-table-wrap{border:1px solid var(--border2)}
+.api-tr{display:grid;grid-template-columns:65px 1fr 1fr;padding:13px 18px;border-bottom:1px solid var(--border);align-items:center;transition:background .15s}
+.api-tr:hover{background:var(--lime2)}
+.api-tr:last-child{border-bottom:none}
+.api-tr-head{background:var(--bg3);border-bottom:1px solid var(--border2)}
+.method{font-family:'Space Mono',monospace;font-size:.58rem;font-weight:700;letter-spacing:.08em;padding:3px 7px;display:inline-block;width:fit-content}
+.m-post{background:var(--lime2);color:var(--lime);border:1px solid rgba(200,255,0,.3)}
+.m-get{background:var(--cyan2);color:var(--cyan);border:1px solid rgba(0,229,255,.2)}
+.api-path{font-family:'Space Mono',monospace;font-size:.65rem;color:var(--txt)}
+.api-desc{font-family:'Space Mono',monospace;font-size:.6rem;color:var(--txt3)}
+
+/* STEPS */
+.steps{display:flex;flex-direction:column;gap:1px;background:var(--border);border:1px solid var(--border2)}
+.step{background:var(--bg2);display:grid;grid-template-columns:52px 1fr;transition:background .2s}
+.step:hover{background:var(--bg3)}
+.step-num{padding:18px 0 18px;display:flex;align-items:flex-start;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:2rem;color:var(--txt3);border-right:1px solid var(--border);padding-top:16px;letter-spacing:.05em;transition:color .2s}
+.step:hover .step-num{color:var(--lime)}
+.step-body{padding:18px 18px 18px 16px}
+.step-title{font-family:'Syne',sans-serif;font-weight:700;font-size:.88rem;color:var(--txt);margin-bottom:8px}
+.step-code{font-family:'Space Mono',monospace;font-size:.62rem;background:var(--bg);color:var(--txt2);padding:10px 14px;line-height:1.75;border:1px solid var(--border);white-space:pre;overflow-x:auto}
+.step-code .c-lime{color:var(--lime)}
+.step-code .c-dim{color:var(--txt3)}
+.step-code .c-cyan{color:var(--cyan)}
+
+/* TECH */
+.tech-strip{border-top:1px solid var(--border);padding:1.5rem 2.5rem;display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap;background:var(--bg2)}
+.tech-label-txt{font-family:'Space Mono',monospace;font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;color:var(--txt3);white-space:nowrap}
+.tech-tags{display:flex;flex-wrap:wrap;gap:8px}
+.tech-tag{font-family:'Space Mono',monospace;font-size:.6rem;letter-spacing:.06em;padding:5px 11px;border:1px solid var(--border2);color:var(--txt2);background:var(--bg3);transition:all .18s;cursor:default}
+.tech-tag:hover{border-color:var(--lime);color:var(--lime);background:var(--lime2)}
+.tech-tag-s{border-color:rgba(200,255,0,.35)!important;color:var(--lime)!important;background:var(--lime2)!important}
+
+/* FOOTER */
+footer{background:var(--bg);border-top:1px solid var(--border2);padding:2rem 2.5rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem}
+.footer-logo{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;color:var(--lime);letter-spacing:.06em}
+.footer-txt{font-family:'Space Mono',monospace;font-size:.58rem;color:var(--txt3);letter-spacing:.08em}
+.footer-hackathon{font-family:'Space Mono',monospace;font-size:.58rem;letter-spacing:.1em;color:var(--lime);opacity:.6}
+
+/* GLITCH HOVER */
+.glitch-wrap{position:relative;display:inline-block}
+.glitch-wrap::before,.glitch-wrap::after{content:attr(data-text);position:absolute;top:0;left:0;font-family:'Bebas Neue',sans-serif;font-size:inherit;line-height:inherit;letter-spacing:inherit;width:100%;opacity:0}
+.glitch-wrap:hover::before{color:var(--lime);opacity:.5;animation:glitch1 .4s step-end}
+.glitch-wrap:hover::after{color:var(--red);opacity:.4;animation:glitch2 .4s step-end}
+@keyframes glitch1{0%,100%{clip-path:inset(80% 0 0 0);transform:translate(-4px,0)}20%{clip-path:inset(30% 0 60% 0);transform:translate(4px,0)}40%{clip-path:inset(50% 0 30% 0);transform:translate(-2px,0)}60%{clip-path:inset(10% 0 80% 0);transform:translate(3px,0)}80%{clip-path:inset(60% 0 10% 0);transform:translate(-3px,0)}}
+@keyframes glitch2{0%,100%{clip-path:inset(10% 0 70% 0);transform:translate(4px,0)}20%{clip-path:inset(70% 0 10% 0);transform:translate(-4px,0)}40%{clip-path:inset(20% 0 50% 0);transform:translate(2px,0)}60%{clip-path:inset(50% 0 20% 0);transform:translate(-2px,0)}80%{clip-path:inset(30% 0 40% 0);transform:translate(4px,0)}}
+
+/* REVEAL */
+.reveal{opacity:0;transform:translateY(18px);transition:opacity .55s ease,transform .55s ease}
+.reveal.vis{opacity:1;transform:translateY(0)}
+.d1{transition-delay:.1s}.d2{transition-delay:.2s}.d3{transition-delay:.3s}
+
+/* RESPONSIVE */
+@media(max-width:1024px){
+  .hero-content,.arch-layout,.api-layout{grid-template-columns:1fr}
+  .stats{grid-template-columns:repeat(3,1fr)}
+  .findings-grid{grid-template-columns:1fr}
+  nav{padding:0 1.5rem}
+  .section{padding:60px 1.5rem}
+}
+@media(max-width:640px){
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .hero-h1{font-size:3rem}
+  .nav-links li:not(:last-child){display:none}
+  footer{flex-direction:column;gap:.5rem}
+}
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="ring"></div>
+
+<nav>
+  <a class="nav-logo" href="#">CTIB</a>
+  <ul class="nav-links">
+    <li><a href="#arch">Architecture</a></li>
+    <li><a href="#demo">Demo</a></li>
+    <li><a href="#api">API</a></li>
+    <li><a href="#start">Start</a></li>
+  </ul>
+  <div class="nav-status"><div class="status-dot"></div>SYSTEM LIVE</div>
+</nav>
+
+<section class="hero">
+  <div class="hero-bg-text">CTIB</div>
+  <div class="hero-content">
+    <div>
+      <p class="hero-tag">Epistemic Handoff Agent System</p>
+      <h1 class="hero-h1">
+        <span class="glitch-wrap" data-text="TRANSFER">TRANSFER</span><br>
+        <span class="accent glitch-wrap" data-text="CLINICAL">CLINICAL</span><br>
+        <span class="stroke glitch-wrap" data-text="REASONING">REASONING</span>
+      </h1>
+      <p class="hero-desc">
+        CTIB moves clinical <span style="color:var(--txt)">reasoning state</span> — not just data — during care transitions.<br>
+        5 MCP constraint servers · 3 A2A agents · 1 FHIR-native EpistemicHandoffBundle.
+      </p>
+      <div class="hero-actions">
+        <a href="/static/dashboard.html" class="btn-main">▶ RUN DEMO</a>
+        <a href="#arch" class="btn-outline">VIEW ARCHITECTURE →</a>
+      </div>
+    </div>
+
+    <div class="terminal reveal d1">
+      <div class="term-bar">
+        <div class="term-circle" style="background:#ff5f57"></div>
+        <div class="term-circle" style="background:#ffbd2e"></div>
+        <div class="term-circle" style="background:#28c840"></div>
+        <span class="term-title">ctib · pipeline · live</span>
+      </div>
+      <div class="term-body" id="termBody">
+        <div class="t-line"><span class="t-prompt">$</span><span class="t-cmd">python main.py --patient maria-chen</span></div>
+        <div class="t-out t-dim">initializing swarm orchestrator...</div>
+        <div class="t-out t-ok">✓ ContextBrokerAgent      SHARP escrow ready</div>
+        <div class="t-out t-ok">✓ SwarmOrchestratorAgent  pipeline online</div>
+        <div class="t-out t-dim">  spawning MCP swarm (parallel)...</div>
+        <div class="t-out t-ok">  ✓ PharmSafety-MCP      drug-trajectory</div>
+        <div class="t-out t-ok">  ✓ VitalsTrend-MCP      NEWS2 scoring</div>
+        <div class="t-out t-ok">  ✓ NarrativeSemant-MCP  clinical NLP</div>
+        <div class="t-out t-ok">  ✓ PopulationSignal-MCP archetype match</div>
+        <div class="t-out t-warn">⚡ Dissonance-MCP        CONFLICT DETECTED</div>
+        <div class="t-out t-err">  → cefepime trajectory: conflict in 12-18h</div>
+        <div class="t-out t-err">  → orphaned intention: CRP follow-up missing</div>
+        <div class="t-out t-cyan">⬡ LLM synthesis         trajectory complete</div>
+        <div class="t-out t-ok">✓ TransitionDeliveryAgent bundle dispatched</div>
+        <div class="t-out t-dim" style="margin-top:6px">─────────────────────────────────</div>
+        <div class="t-out t-ok">✓ EpistemicHandoffBundle  97 FHIR resources</div>
+        <div class="t-line" style="margin-top:4px"><span class="t-prompt">$</span><span class="t-cursor"></span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="marquee-wrap">
+    <div class="marquee-inner">
+      <span class="m-item"><span class="m-dot">◆</span>FHIR R4 NATIVE</span>
+      <span class="m-item"><span class="m-dot">◆</span>ZERO PHI IN DATASETS</span>
+      <span class="m-item"><span class="m-dot">◆</span>SHARP ESCROW PROTOCOL</span>
+      <span class="m-item"><span class="m-dot">◆</span>5 MCP CONSTRAINT SERVERS</span>
+      <span class="m-item"><span class="m-dot">◆</span>3 A2A AGENTS</span>
+      <span class="m-item"><span class="m-dot">◆</span>GEMINI LLM SYNTHESIS</span>
+      <span class="m-item"><span class="m-dot">◆</span>DISSONANCE DETECTION</span>
+      <span class="m-item"><span class="m-dot">◆</span>NEWS2 SCORING</span>
+      <span class="m-item"><span class="m-dot">◆</span>ORPHANED INTENTION DETECTION</span>
+      <span class="m-item"><span class="m-dot">◆</span>AGENTS ASSEMBLE HACKATHON</span>
+      <span class="m-item"><span class="m-dot">◆</span>FHIR R4 NATIVE</span>
+      <span class="m-item"><span class="m-dot">◆</span>ZERO PHI IN DATASETS</span>
+      <span class="m-item"><span class="m-dot">◆</span>SHARP ESCROW PROTOCOL</span>
+      <span class="m-item"><span class="m-dot">◆</span>5 MCP CONSTRAINT SERVERS</span>
+      <span class="m-item"><span class="m-dot">◆</span>3 A2A AGENTS</span>
+      <span class="m-item"><span class="m-dot">◆</span>GEMINI LLM SYNTHESIS</span>
+      <span class="m-item"><span class="m-dot">◆</span>DISSONANCE DETECTION</span>
+      <span class="m-item"><span class="m-dot">◆</span>NEWS2 SCORING</span>
+      <span class="m-item"><span class="m-dot">◆</span>ORPHANED INTENTION DETECTION</span>
+      <span class="m-item"><span class="m-dot">◆</span>AGENTS ASSEMBLE HACKATHON</span>
+    </div>
+  </div>
+</section>
+
+<div class="stats reveal">
+  <div class="stat"><div class="stat-corner"></div><span class="stat-n">5<span class="unit">×</span></span><span class="stat-l">MCP Servers</span></div>
+  <div class="stat"><div class="stat-corner"></div><span class="stat-n">3<span class="unit">×</span></span><span class="stat-l">A2A Agents</span></div>
+  <div class="stat"><div class="stat-corner"></div><span class="stat-n">97</span><span class="stat-l">FHIR Resources</span></div>
+  <div class="stat"><div class="stat-corner"></div><span class="stat-n">0<span class="unit">φ</span></span><span class="stat-l">PHI in Data</span></div>
+  <div class="stat"><div class="stat-corner"></div><span class="stat-n">R<span class="unit">4</span></span><span class="stat-l">FHIR Version</span></div>
+</div>
+
+<section id="arch" class="section" style="background:var(--bg)">
+  <div class="section-inner">
+    <p class="section-kicker reveal">System Architecture</p>
+    <h2 class="section-h reveal">THE <span class="accent">SWARM</span><br><span class="stroke">PIPELINE</span></h2>
+    <p class="section-sub reveal">Parallel MCP servers. Sequential A2A handoffs. Every component purpose-built. No orphaned intentions. No temporal blind spots.</p>
+    <div class="arch-layout">
+      <div class="reveal d1">
+        <div class="pipe-flow">
+          <div class="pf-node" data-index="A2A">
+            <span class="pf-glyph">⬡</span>
+            <div class="pf-main"><div class="pf-name">SwarmOrchestratorAgent</div><div class="pf-desc">Pipeline director · LLM synthesis</div></div>
+            <span class="pf-badge badge-a2a">A2A</span>
+          </div>
+          <div class="pf-arrow-line"></div>
+          <div class="pf-node" data-index="A2A">
+            <span class="pf-glyph">⊡</span>
+            <div class="pf-main"><div class="pf-name">ContextBrokerAgent</div><div class="pf-desc">SHARP escrow · bundle assembly · Zero LLM</div></div>
+            <span class="pf-badge badge-a2a">A2A</span>
+          </div>
+          <div class="pf-arrow-line"></div>
+          <div class="parallel-label">↓ PARALLEL SWARM ↓</div>
+          <div class="pf-arrow-parallel">
+            <div class="pf-node" data-index="MCP" style="flex-direction:column;gap:5px;align-items:flex-start">
+              <span class="pf-glyph" style="width:auto">Rx</span>
+              <div class="pf-name" style="font-size:.72rem">PharmSafety</div>
+              <div class="pf-desc">Drug-trajectory</div>
+            </div>
+            <div class="pf-node" data-index="MCP" style="flex-direction:column;gap:5px;align-items:flex-start">
+              <span class="pf-glyph" style="width:auto">♡</span>
+              <div class="pf-name" style="font-size:.72rem">VitalsTrend</div>
+              <div class="pf-desc">NEWS2 scoring</div>
+            </div>
+            <div class="pf-node" data-index="MCP" style="flex-direction:column;gap:5px;align-items:flex-start">
+              <span class="pf-glyph" style="width:auto">✦</span>
+              <div class="pf-name" style="font-size:.72rem">NarrativeSem.</div>
+              <div class="pf-desc">Clinical NLP</div>
+            </div>
+            <div class="pf-node" data-index="MCP" style="flex-direction:column;gap:5px;align-items:flex-start">
+              <span class="pf-glyph" style="width:auto">◎</span>
+              <div class="pf-name" style="font-size:.72rem">PopulSignal</div>
+              <div class="pf-desc">Archetype match</div>
+            </div>
+          </div>
+          <div class="pf-arrow-line" style="background:rgba(255,107,0,.4)"></div>
+          <div class="pf-node" data-index="MCP" style="border-color:rgba(255,107,0,.3)">
+            <span class="pf-glyph" style="color:var(--orange)">⚡</span>
+            <div class="pf-main"><div class="pf-name">Dissonance-MCP</div><div class="pf-desc">Cross-signal conflict classification</div></div>
+            <span class="pf-badge badge-llm">LLM</span>
+          </div>
+          <div class="pf-arrow-line"></div>
+          <div class="pf-node" data-index="A2A" style="border-color:rgba(200,255,0,.2)">
+            <span class="pf-glyph" style="color:var(--lime)">→</span>
+            <div class="pf-main"><div class="pf-name">TransitionDeliveryAgent</div><div class="pf-desc">A2A courier · Zero LLM · StepDown handoff</div></div>
+            <span class="pf-badge badge-a2a">A2A</span>
+          </div>
+        </div>
+      </div>
+      <div class="reveal d2">
+        <div class="table-wrap">
+          <div class="table-head">
+            <span class="th-cell">Component</span><span class="th-cell">Type</span><span class="th-cell">LLM</span><span class="th-cell">Role</span>
+          </div>
+          <div class="table-row"><div><div class="tr-name">ContextBrokerAgent</div><div class="tr-sub">Privacy spine</div></div><div class="tr-cell"><span class="pf-badge badge-a2a">A2A</span></div><div class="tr-cell llm-n">✕ Zero</div><div class="tr-cell">SHARP escrow</div></div>
+          <div class="table-row"><div><div class="tr-name">SwarmOrchestratorAgent</div><div class="tr-sub">Director</div></div><div class="tr-cell"><span class="pf-badge badge-a2a">A2A</span></div><div class="tr-cell llm-y">✓ Synth</div><div class="tr-cell">Pipeline control</div></div>
+          <div class="table-row"><div><div class="tr-name">TransitionDeliveryAgent</div><div class="tr-sub">Courier</div></div><div class="tr-cell"><span class="pf-badge badge-a2a">A2A</span></div><div class="tr-cell llm-n">✕ Zero</div><div class="tr-cell">A2A delivery</div></div>
+          <div class="table-row"><div><div class="tr-name">PharmSafety-MCP</div><div class="tr-sub">Medication</div></div><div class="tr-cell"><span class="pf-badge badge-mcp">MCP</span></div><div class="tr-cell llm-y">✓ Drug</div><div class="tr-cell">Nephrotoxic detect</div></div>
+          <div class="table-row"><div><div class="tr-name">VitalsTrend-MCP</div><div class="tr-sub">Deterioration</div></div><div class="tr-cell"><span class="pf-badge badge-mcp">MCP</span></div><div class="tr-cell llm-y">✓ Det.</div><div class="tr-cell">NEWS2 scoring</div></div>
+          <div class="table-row"><div><div class="tr-name">NarrativeSemant-MCP</div><div class="tr-sub">Core AI</div></div><div class="tr-cell"><span class="pf-badge badge-mcp">MCP</span></div><div class="tr-cell llm-y">✓ Core</div><div class="tr-cell">Orphan intention</div></div>
+          <div class="table-row"><div><div class="tr-name">PopulationSignal-MCP</div><div class="tr-sub">Archetype</div></div><div class="tr-cell"><span class="pf-badge badge-mcp">MCP</span></div><div class="tr-cell llm-n">✕ Determ.</div><div class="tr-cell">Traj. archetype</div></div>
+          <div class="table-row"><div><div class="tr-name">Dissonance-MCP</div><div class="tr-sub">Conflict</div></div><div class="tr-cell"><span class="pf-badge badge-mcp">MCP</span></div><div class="tr-cell llm-y">✓ Class.</div><div class="tr-cell">Cross-signal</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="demo" class="section findings-section">
+  <div class="section-inner">
+    <p class="section-kicker reveal">Demo Scenario</p>
+    <h2 class="section-h reveal">MARIA CHEN<br><span class="accent">GOLDEN</span> <span class="stroke">PATH</span></h2>
+    <div class="patient-band reveal">
+      <div class="pb-avatar">MC</div>
+      <div class="pb-info"><div class="pb-name">Maria Chen</div><div class="pb-meta">67F · POST-OP CABG DAY 5 · ICU → STEP-DOWN</div></div>
+      <div class="pb-stat"><div class="pb-val">02:14</div><div class="pb-key">Transfer Time AM</div></div>
+      <div class="pb-stat"><div class="pb-val">97</div><div class="pb-key">FHIR Resources</div></div>
+      <div class="pb-stat"><div class="pb-val">3</div><div class="pb-key">Critical Findings</div></div>
+      <div class="pb-alert"><div class="pb-alert-num">⚡</div><div class="pb-alert-txt">CONFLICTS ACTIVE</div></div>
+    </div>
+    <div class="findings-grid reveal" id="findingsGrid">
+      <div class="finding f-warn">
+        <div class="f-num">01</div>
+        <span class="f-type">Orphaned Intention</span>
+        <div class="f-title">CRP trend follow-up vanished into the void</div>
+        <div class="f-body">"Will revisit CRP trend" was documented and then never was. Rheumatology consult never formalized. NarrativeSemant-MCP caught the orphan via clinical NLP gap analysis.</div>
+      </div>
+      <div class="finding f-info">
+        <div class="f-num">02</div>
+        <span class="f-type">Temporal Dissonance</span>
+        <div class="f-title">Cefepime dose is fine — until it isn't</div>
+        <div class="f-body">Current creatinine looks clean. Renal trajectory says conflict incoming in 12–18h. PharmSafety-MCP crossed drug data with VitalsTrend projections. Classic temporal blind spot.</div>
+      </div>
+      <div class="finding f-ok">
+        <div class="f-num">03</div>
+        <span class="f-type">Watch Subscriptions</span>
+        <div class="f-title">Auto-generated FHIR monitoring hooks</div>
+        <div class="f-body">FHIR Subscriptions auto-generated for creatinine threshold monitoring. Step-down team gets real-time alerts. No manual setup. No missed thresholds.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="api" class="section api-section">
+  <div class="section-inner">
+    <p class="section-kicker reveal">Integration</p>
+    <h2 class="section-h reveal">API <span class="accent">ENDPOINTS</span></h2>
+    <div class="api-layout">
+      <div class="reveal d1">
+        <div class="api-table-wrap">
+          <div class="api-tr api-tr-head">
+            <span class="th-cell">Method</span><span class="th-cell">Path</span><span class="th-cell">Description</span>
+          </div>
+          <div class="api-tr"><span class="method m-post">POST</span><span class="api-path">/api/run-ctib</span><span class="api-desc">Execute full pipeline</span></div>
+          <div class="api-tr"><span class="method m-get">GET</span><span class="api-path">/api/session/{id}</span><span class="api-desc">Session status</span></div>
+          <div class="api-tr"><span class="method m-get">GET</span><span class="api-path">/api/bundle/{id}</span><span class="api-desc">Assembled bundle</span></div>
+          <div class="api-tr"><span class="method m-get">GET</span><span class="api-path">/api/audit</span><span class="api-desc">FHIR AuditEvent trail</span></div>
+          <div class="api-tr"><span class="method m-get">GET</span><span class="api-path">/api/health</span><span class="api-desc">Health check</span></div>
+          <div class="api-tr"><span class="method m-get">GET</span><span class="api-path">/.well-known/agent-card.json</span><span class="api-desc">A2A discovery</span></div>
+        </div>
+      </div>
+      <div id="start" class="reveal d2">
+        <div class="section-kicker" style="margin-bottom:1.2rem">Quick Start</div>
+        <div class="steps">
+          <div class="step">
+            <div class="step-num">1</div>
+            <div class="step-body">
+              <div class="step-title">Install prereqs + configure env</div>
+              <div class="step-code"><span class="c-lime">cd</span> ctib
+cp .env.example .env
+<span class="c-dim"># set GEMINI_API_KEY</span>
+pip install -e .</div>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-num">2</div>
+            <div class="step-body">
+              <div class="step-title">Spin up HAPI FHIR + seed patient data</div>
+              <div class="step-code">docker compose up -d
+python seed_fhir.py
+<span class="c-dim"># seeds 97 FHIR resources</span></div>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-num">3</div>
+            <div class="step-body">
+              <div class="step-title">Launch CTIB</div>
+              <div class="step-code">python main.py
+<span class="c-dim"># Dashboard → </span><span class="c-cyan">localhost:9000</span>
+<span class="c-dim"># Docs     → </span><span class="c-cyan">localhost:9000/docs</span>
+python -m pytest tests/ -v</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="tech-strip reveal">
+  <span class="tech-label-txt">Built with</span>
+  <div class="tech-tags">
+    <span class="tech-tag">Python 3.11+</span>
+    <span class="tech-tag">FastAPI</span>
+    <span class="tech-tag">Uvicorn</span>
+    <span class="tech-tag">HAPI FHIR R4</span>
+    <span class="tech-tag">Google Gemini</span>
+    <span class="tech-tag">MCP SDK</span>
+    <span class="tech-tag">A2A Protocol</span>
+    <span class="tech-tag">SHARP</span>
+    <span class="tech-tag">Docker</span>
+    <span class="tech-tag tech-tag-s">100% Synthetic · Zero PHI</span>
+  </div>
+</div>
+
+<footer>
+  <span class="footer-logo">CTIB</span>
+  <span class="footer-txt">Clinical Transition Intelligence Bus · EpistemicHandoffBundle · FHIR R4</span>
+  <span class="footer-hackathon">AGENTS ASSEMBLE HACKATHON ◆ PROMPT OPINION MARKETPLACE</span>
+</footer>
+
+<script>
+const cursor=document.getElementById('cursor'),ring=document.getElementById('ring');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY});
+(function loop(){
+  rx+=(mx-rx)*.12;ry+=(my-ry)*.12;
+  cursor.style.left=mx+'px';cursor.style.top=my+'px';
+  ring.style.left=rx+'px';ring.style.top=ry+'px';
+  requestAnimationFrame(loop);
+})();
+document.querySelectorAll('a,button,.pf-node,.step,.finding,.stat').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{ring.style.width='52px';ring.style.height='52px';ring.style.opacity='.8'});
+  el.addEventListener('mouseleave',()=>{ring.style.width='32px';ring.style.height='32px';ring.style.opacity='.5'});
+});
+
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('vis');obs.unobserve(e.target)}});
+},{threshold:.08,rootMargin:'0px 0px -30px 0px'});
+document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+
+setInterval(()=>{
+  const stats=document.querySelectorAll('.stat-n');
+  const s=stats[Math.floor(Math.random()*stats.length)];
+  s.style.transform=`translate(${(Math.random()-.5)*4}px,0)`;
+  s.style.color=Math.random()>.5?'var(--lime)':'var(--txt)';
+  setTimeout(()=>{s.style.transform='';s.style.color=''},80);
+},2800);
+</script>
+</body>
+</html>

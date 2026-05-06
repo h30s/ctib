@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  hapi-fhir:
+    image: hapiproject/hapi:latest
+    container_name: ctib-hapi-fhir
+    ports:
+      - "8080:8080"
+    environment:
+      - hapi.fhir.server_address=http://localhost:8080/fhir
+      - hapi.fhir.allow_multiple_delete=true
+      - hapi.fhir.allow_external_references=true
+    volumes:
+      - hapi-data:/data/hapi
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/fhir/metadata"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+volumes:
+  hapi-data:

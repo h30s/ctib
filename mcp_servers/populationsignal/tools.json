@@ -1,0 +1,21 @@
+{
+  "name": "PopulationSignal-MCP",
+  "version": "1.0",
+  "description": "Trajectory archetype matching against population-level benchmarks. Deterministic — no LLM.",
+  "tools": [
+    {
+      "name": "match_trajectory_archetype",
+      "description": "Match patient profile against population trajectory archetypes using vector similarity. Returns percentile position, historical complication rate, and 30-day readmission rate. Deterministic — no LLM.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "patient_age": {"type": "integer", "description": "Patient age in years"},
+          "patient_gender": {"type": "string", "description": "Patient gender (male/female)"},
+          "condition_codes": {"type": "array", "items": {"type": "string"}, "description": "SNOMED-CT condition codes"},
+          "current_news2": {"type": "integer", "description": "Current NEWS2 score"}
+        },
+        "required": ["patient_age", "patient_gender", "condition_codes", "current_news2"]
+      }
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "resourceType": "Patient",
+  "id": "pt-maria-chen-001",
+  "meta": {
+    "profile": ["http://hl7.org/fhir/us/core/StructureDefinition/us-core-patient"]
+  },
+  "identifier": [
+    {
+      "system": "urn:ctib:synthetic",
+      "value": "CTIB-SYN-001"
+    }
+  ],
+  "active": true,
+  "name": [
+    {
+      "use": "official",
+      "family": "Chen",
+      "given": ["Maria"]
+    }
+  ],
+  "gender": "female",
+  "birthDate": "1958-09-14",
+  "address": [
+    {
+      "use": "home",
+      "line": ["456 Oak Avenue"],
+      "city": "Springfield",
+      "state": "IL",
+      "postalCode": "62704"
+    }
+  ]
+}

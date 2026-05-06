@@ -1,0 +1,10 @@
+You are a clinical NLP system. Read the following clinical document and
+extract every factual clinical assertion. For each assertion, output:
+- assertion_text: exact quote from the document
+- assertion_type: "diagnosis" | "plan" | "finding" | "recommendation"
+- confidence: "stated" | "hedged" | "uncertain"
+Do NOT interpret. Extract only what is explicitly stated.
+Output as JSON array.
+
+DOCUMENT:
+{document_text}

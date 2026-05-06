@@ -1,0 +1,43 @@
+{
+  "name": "NarrativeSemant-MCP",
+  "version": "1.0",
+  "description": "Clinical narrative analysis, uncertainty detection, and orphaned intention identification. The purest AI node in CTIB.",
+  "tools": [
+    {
+      "name": "extract_clinical_assertions",
+      "description": "Extract every factual clinical assertion from clinical documents using LLM with structured extraction. Identifies stated, hedged, and uncertain assertions.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "documents": {"type": "array", "description": "FHIR DocumentReference resources with base64-encoded content"}
+        },
+        "required": ["documents"]
+      }
+    },
+    {
+      "name": "detect_uncertainty_language",
+      "description": "Detect hedged language, unresolved differentials, conditional intentions, and deferred actions within clinical documents. Cross-references against subsequent documents for resolution checking.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "documents": {"type": "array", "description": "FHIR DocumentReference resources to analyze"},
+          "subsequent_documents": {"type": "array", "description": "Later documents for resolution checking"}
+        },
+        "required": ["documents"]
+      }
+    },
+    {
+      "name": "identify_open_questions",
+      "description": "THE MONEY PROMPT — Find orphaned clinical intentions: things a clinician stated they would do but never followed up on. Generates FHIR Task resources for each orphaned intention with exact source citations.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "assertion_result": {"type": "object", "description": "Output from extract_clinical_assertions"},
+          "conditions": {"type": "array", "description": "FHIR Condition resources"},
+          "documents": {"type": "array", "description": "FHIR DocumentReference resources"}
+        },
+        "required": ["assertion_result", "conditions", "documents"]
+      }
+    }
+  ]
+}

@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CTIB — Live Swarm Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Bebas+Neue&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #080808;
+  --bg2: #0f0f0f;
+  --bg3: #141414;
+  --card: #111111;
+  --border: rgba(255,255,255,0.07);
+  --border2: rgba(255,255,255,0.13);
+  --txt: #f0f0f0;
+  --txt2: #888;
+  --txt3: #444;
+  --lime: #c8ff00;
+  --lime2: rgba(200,255,0,0.08);
+  --red: #ff3c3c;
+  --red2: rgba(255,60,60,0.08);
+  --cyan: #00e5ff;
+  --cyan2: rgba(0,229,255,0.08);
+  --orange: #ff6b00;
+  --orange2: rgba(255,107,0,0.08);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{height: 100%;}
+body{font-family:'Syne',sans-serif;background:var(--bg);color:var(--txt);height:100vh;overflow:hidden;display:flex;flex-direction:column;}
+body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.1) 2px,rgba(0,0,0,0.1) 4px);pointer-events:none;z-index:9998}
+
+/* NAV */
+nav{flex-shrink:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:0 2.5rem;height:58px;border-bottom:1px solid var(--border);background:rgba(8,8,8,0.92);}
+.nav-logo{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;letter-spacing:.08em;color:var(--lime);text-decoration:none}
+.nav-back{font-family:'Space Mono',monospace;font-size:.63rem;letter-spacing:.14em;text-transform:uppercase;color:var(--txt2);text-decoration:none;transition:color .2s;border:1px solid var(--border2);padding:6px 12px;}
+.nav-back:hover{color:var(--txt);border-color:var(--txt3);}
+.nav-status{display:flex;align-items:center;gap:7px;font-family:'Space Mono',monospace;font-size:.6rem;color:var(--lime);letter-spacing:.1em}
+.status-dot{width:6px;height:6px;border-radius:50%;background:var(--lime);animation:blink 1.4s step-end infinite}
+@keyframes blink{50%{opacity:0}}
+
+/* APP LAYOUT */
+.app-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 1.5rem 2.5rem;
+  gap: 1.5rem;
+  overflow-y: auto;
+  position: relative;
+  z-index: 10;
+}
+
+/* PATIENT HEADER */
+.patient-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid var(--border2);
+  background: var(--bg2);
+  padding: 1.5rem 2rem;
+}
+.ph-left { display: flex; gap: 2rem; align-items: center; }
+.ph-avatar { width:64px; height:64px; background:var(--lime); display:flex; align-items:center; justify-content:center; font-family:'Bebas Neue',sans-serif; font-size:1.8rem; color:#000; letter-spacing:.05em;}
+.ph-name { font-family:'Syne',sans-serif; font-weight:800; font-size:1.4rem; color:var(--txt); margin-bottom:4px; }
+.ph-meta { font-family:'Space Mono',monospace; font-size:.65rem; color:var(--txt2); letter-spacing:.08em; }
+.ph-tags { display: flex; gap: 10px; margin-top: 8px; }
+.ph-tag { font-family:'Space Mono',monospace; font-size:.55rem; padding: 3px 8px; border: 1px solid var(--border2); letter-spacing:.1em; text-transform:uppercase; }
+.ph-tag.danger { color: var(--red); border-color: rgba(255,60,60,.3); background: var(--red2); }
+.ph-tag.info { color: var(--cyan); border-color: rgba(0,229,255,.3); background: var(--cyan2); }
+
+.run-actions { display: flex; align-items: center; gap: 1rem; }
+.btn-run {
+  background:var(--lime);color:#000;font-family:'Space Mono',monospace;font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:16px 32px;border:none;cursor:pointer;display:inline-flex;align-items:center;gap:10px;transition:all .15s;clip-path:polygon(0 0,calc(100% - 10px) 0,100% 10px,100% 100%,0 100%);
+}
+.btn-run:hover { transform:translate(-2px,-2px);box-shadow:4px 4px 0 var(--lime3); }
+.btn-run:disabled { background: var(--txt3); color: var(--txt2); cursor: not-allowed; box-shadow: none; transform: none; }
+.timer { font-family:'Space Mono',monospace; font-size: 1.2rem; color: var(--txt2); width: 80px; text-align: right; }
+
+/* PIPELINE TRACKER */
+.pipeline-track {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 2rem;
+  background: var(--bg2);
+  border: 1px solid var(--border2);
+  position: relative;
+}
+.pipeline-track::before {
+  content: ''; position: absolute; left: 4rem; right: 4rem; top: 50%; height: 2px; background: var(--border); z-index: 0; transform: translateY(-50%);
+}
+.p-node {
+  position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; gap: 12px; width: 120px;
+}
+.p-indicator {
+  width: 24px; height: 24px; background: var(--bg); border: 2px solid var(--border2); display: flex; align-items: center; justify-content: center; transition: all 0.3s;
+}
+.p-indicator-inner { width: 8px; height: 8px; background: transparent; transition: all 0.3s; }
+.p-label { font-family: 'Space Mono', monospace; font-size: .6rem; color: var(--txt3); text-align: center; letter-spacing: .08em; text-transform: uppercase; transition: color 0.3s; }
+
+.p-node.active .p-indicator { border-color: var(--cyan); box-shadow: 0 0 15px var(--cyan2); }
+.p-node.active .p-indicator-inner { background: var(--cyan); animation: blink 1s infinite; }
+.p-node.active .p-label { color: var(--cyan); }
+
+.p-node.done .p-indicator { border-color: var(--lime); }
+.p-node.done .p-indicator-inner { background: var(--lime); width: 14px; height: 14px; clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%); }
+.p-node.done .p-label { color: var(--txt); }
+
+/* CONTENT SPLIT */
+.content-split {
+  display: grid;
+  grid-template-columns: 350px 1fr;
+  gap: 1.5rem;
+  flex: 1;
+  min-height: 0;
+}
+
+/* TERMINAL */
+.terminal {
+  background: var(--bg2); border: 1px solid var(--border2); display: flex; flex-direction: column;
+}
+.term-header { padding: 12px 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 8px; background: var(--bg3); }
+.term-circle{width:9px;height:9px;border-radius:50%}
+.term-title{font-family:'Space Mono',monospace;font-size:.6rem;color:var(--txt3);letter-spacing:.1em;margin-left:auto;}
+.term-body {
+  padding: 16px; font-family:'Space Mono',monospace; font-size:.65rem; line-height:1.7; flex: 1; overflow-y: auto; color: var(--txt2);
+}
+.t-line { display:flex; gap:8px; margin-bottom:4px; }
+.t-prompt { color: var(--lime); flex-shrink:0; }
+.t-cursor { display:inline-block; width:6px; height:12px; background:var(--lime); animation:blink 1s step-end infinite; vertical-align:middle; margin-top:2px; }
+.t-out { margin-bottom: 2px; }
+.t-ok { color: var(--lime); }
+.t-err { color: var(--red); }
+.t-warn { color: var(--orange); }
+.t-dim { color: var(--txt3); }
+.t-cyan { color: var(--cyan); }
+
+/* RESULTS AREA */
+.results-area {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  overflow-y: auto;
+  padding-right: 10px;
+}
+.results-area::-webkit-scrollbar { width: 4px; }
+.results-area::-webkit-scrollbar-thumb { background: var(--border2); }
+
+.empty-state {
+  height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  border: 1px dashed var(--border2); font-family: 'Space Mono', monospace; color: var(--txt3); letter-spacing: .1em;
+}
+
+/* CARDS */
+.res-card {
+  background: var(--bg2); border: 1px solid var(--border2); position: relative;
+}
+.res-card::before { content:''; position:absolute; top:0; left:0; width:3px; height:100%; }
+.res-card.dissonance::before { background: var(--red); }
+.res-card.questions::before { background: var(--cyan); }
+.res-card.watch::before { background: var(--lime); }
+.res-card.trajectory::before { background: var(--orange); }
+
+.rc-header {
+  padding: 12px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between;
+}
+.rc-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: .9rem; color: var(--txt); text-transform: uppercase; letter-spacing: .05em; }
+.rc-badge { font-family: 'Space Mono', monospace; font-size: .55rem; padding: 2px 6px; border: 1px solid; text-transform: uppercase; letter-spacing: .1em; }
+.rc-body { padding: 20px; }
+
+/* Items */
+.item-box {
+  background: var(--bg); border: 1px solid var(--border); padding: 16px; margin-bottom: 12px;
+}
+.item-box:last-child { margin-bottom: 0; }
+.ib-head { display: flex; justify-content: space-between; margin-bottom: 8px; }
+.ib-type { font-family: 'Space Mono', monospace; font-size: .6rem; color: var(--txt); letter-spacing: .1em; text-transform: uppercase; }
+.ib-sev { font-family: 'Space Mono', monospace; font-size: .55rem; padding: 2px 6px; background: rgba(255,255,255,0.1); color: var(--txt); text-transform: uppercase; }
+.ib-desc { font-family: 'Space Mono', monospace; font-size: .65rem; color: var(--txt2); line-height: 1.6; }
+.ib-meta { margin-top: 12px; padding-top: 12px; border-top: 1px dotted var(--border2); font-family: 'Space Mono', monospace; font-size: .6rem; color: var(--txt); }
+
+@media (max-width: 1024px) {
+  .content-split { grid-template-columns: 1fr; }
+  body { overflow: auto; height: auto; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="/">CTIB</a>
+  <a class="nav-back" href="/">← Back to Home</a>
+  <div class="nav-status"><div class="status-dot"></div>SWARM STANDBY</div>
+</nav>
+
+<div class="app-main">
+  <!-- Header -->
+  <div class="patient-header">
+    <div class="ph-left">
+      <div class="ph-avatar">MC</div>
+      <div>
+        <div class="ph-name">Maria Chen</div>
+        <div class="ph-meta">MRN: CTIB-SYN-001 &nbsp; // &nbsp; 67F &nbsp; // &nbsp; ENCOUNTER: enc-icu-day5</div>
+        <div class="ph-tags">
+          <span class="ph-tag">POST-OP CABG D5</span>
+          <span class="ph-tag info">ICU → STEP-DOWN</span>
+          <span class="ph-tag danger">SHARP ESCROW ACTIVE</span>
+        </div>
+      </div>
+    </div>
+    <div class="run-actions">
+      <div class="timer" id="timer">00.00s</div>
+      <button id="runBtn" class="btn-run" onclick="startSwarm()">▶ INITIALIZE SWARM</button>
+    </div>
+  </div>
+
+  <!-- Pipeline -->
+  <div class="pipeline-track">
+    <div class="p-node" id="node0">
+      <div class="p-indicator"><div class="p-indicator-inner"></div></div>
+      <div class="p-label">1. SHARP<br>Escrow</div>
+    </div>
+    <div class="p-node" id="node1">
+      <div class="p-indicator"><div class="p-indicator-inner"></div></div>
+      <div class="p-label">2. FHIR<br>Fetch</div>
+    </div>
+    <div class="p-node" id="node2">
+      <div class="p-indicator"><div class="p-indicator-inner"></div></div>
+      <div class="p-label">3. Parallel<br>MCP Swarm</div>
+    </div>
+    <div class="p-node" id="node3">
+      <div class="p-indicator"><div class="p-indicator-inner"></div></div>
+      <div class="p-label">4. LLM<br>Synthesis</div>
+    </div>
+    <div class="p-node" id="node4">
+      <div class="p-indicator"><div class="p-indicator-inner"></div></div>
+      <div class="p-label">5. Dissonance<br>Detect</div>
+    </div>
+    <div class="p-node" id="node5">
+      <div class="p-indicator"><div class="p-indicator-inner"></div></div>
+      <div class="p-label">6. Bundle<br>Assemble</div>
+    </div>
+  </div>
+
+  <!-- Main Area -->
+  <div class="content-split">
+    <!-- Term -->
+    <div class="terminal">
+      <div class="term-header">
+        <div class="term-circle" style="background:#ff5f57"></div>
+        <div class="term-circle" style="background:#ffbd2e"></div>
+        <div class="term-circle" style="background:#28c840"></div>
+        <span class="term-title">ctib-core.log</span>
+      </div>
+      <div class="term-body" id="termLog">
+        <div class="t-line"><span class="t-prompt">$</span><span class="t-cmd">Awaiting manual initialization...</span></div>
+        <div class="t-line"><span class="t-prompt">$</span><span class="t-cursor"></span></div>
+      </div>
+    </div>
+
+    <!-- Results -->
+    <div class="results-area" id="resultsArea">
+      <div class="empty-state" id="emptyState">
+        <div>[ NO ACTIVE TRANSITION BUNDLE ]</div>
+        <div style="font-size:0.6rem; color:var(--border2); margin-top:10px;">CLICK 'INITIALIZE SWARM' TO BEGIN</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+let startTime = 0;
+let timerInt = null;
+
+function updateTimer() {
+  const t = (Date.now() - startTime) / 1000;
+  document.getElementById('timer').textContent = t.toFixed(2) + 's';
+}
+
+function writeLog(text, cls='t-dim') {
+  const term = document.getElementById('termLog');
+  const tLine = document.createElement('div');
+  tLine.className = `t-out ${cls}`;
+  tLine.textContent = text;
+  // insert before the cursor line
+  const lastLine = term.lastElementChild;
+  term.insertBefore(tLine, lastLine);
+  term.scrollTop = term.scrollHeight;
+}
+
+async function startSwarm() {
+  const btn = document.getElementById('runBtn');
+  btn.disabled = true;
+  btn.textContent = 'EXECUTING...';
+  
+  document.querySelector('.nav-status').innerHTML = '<div class="status-dot"></div>PIPELINE RUNNING';
+  document.querySelector('.nav-status').style.color = 'var(--cyan)';
+
+  startTime = Date.now();
+  timerInt = setInterval(updateTimer, 50);
+
+  const term = document.getElementById('termLog');
+  term.innerHTML = '<div class="t-line"><span class="t-prompt">$</span><span class="t-cmd">ctib run --target maria-chen</span></div><div class="t-line"><span class="t-prompt" id="livePrompt">$</span><span class="t-cursor"></span></div>';
+
+  document.getElementById('emptyState').style.display = 'none';
+  const rArea = document.getElementById('resultsArea');
+  rArea.innerHTML = '<div class="empty-state" style="border-color:var(--cyan);color:var(--cyan)">[ SYNTHESIZING BUNDLE... ]</div>';
+
+  const nodes = [0,1,2,3,4,5].map(i => document.getElementById(`node${i}`));
+  nodes.forEach(n => n.className = 'p-node');
+  
+  // Fake node progression (fast)
+  let nIdx = 0;
+  const nInt = setInterval(() => {
+    if(nIdx > 0 && nIdx <= 5) nodes[nIdx-1].className = 'p-node done';
+    if(nIdx < 6) nodes[nIdx].className = 'p-node active';
+    nIdx++;
+    if(nIdx > 6) clearInterval(nInt);
+  }, 1000);
+
+  try {
+    const res = await fetch('/api/run-ctib', { method: 'POST' });
+    if(!res.ok) throw new Error('Pipeline failed');
+    const data = await res.json();
+    
+    clearInterval(nInt);
+    nodes.forEach(n => n.className = 'p-node done');
+    
+    // Build logs
+    (data.pipeline_log || []).forEach(l => {
+      let cls = 't-ok';
+      if(l.message.includes('error') || l.message.includes('fail')) cls = 't-err';
+      else if(l.message.includes('warn') || l.message.includes('conflict')) cls = 't-warn';
+      else if(l.message.includes('LLM')) cls = 't-cyan';
+      else if(l.message.includes('spawning') || l.message.includes('dispatching')) cls = 't-dim';
+      writeLog(l.message, cls);
+    });
+
+    renderBundle(data.bundle);
+
+    document.querySelector('.nav-status').innerHTML = '<div class="status-dot"></div>BUNDLE DISPATCHED';
+    document.querySelector('.nav-status').style.color = 'var(--lime)';
+
+  } catch(e) {
+    clearInterval(nInt);
+    writeLog(`ERROR: ${e.message}`, 't-err');
+    rArea.innerHTML = `<div class="empty-state" style="border-color:var(--red);color:var(--red)">[ FATAL ERROR ]<br>${e.message}</div>`;
+  } finally {
+    clearInterval(timerInt);
+    btn.textContent = '▶ RUN DEMO';
+    btn.disabled = false;
+  }
+}
+
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+function renderBundle(bundle) {
+  const rArea = document.getElementById('resultsArea');
+  rArea.innerHTML = '';
+
+  // DISSONANCE
+  const confs = bundle.conflicts || [];
+  if(confs.length > 0) {
+    let html = `<div class="res-card dissonance"><div class="rc-header"><span class="rc-title">Dissonance Registry</span><span class="rc-badge" style="color:var(--red);border-color:var(--red)">NEVER COLLAPSE</span></div><div class="rc-body">`;
+    confs.forEach(c => {
+      let sevColor = c.severity === 'CRITICAL' ? 'var(--red)' : 'var(--orange)';
+      html += `
+        <div class="item-box">
+          <div class="ib-head">
+            <span class="ib-type" style="color:${sevColor}">${esc(c.conflict_type)}</span>
+            <span class="ib-sev" style="color:${sevColor}">${esc(c.severity)}</span>
+          </div>
+          <div class="ib-desc">${esc(c.narrative)}</div>
+          ${c.clinical_implication ? `<div class="ib-meta" style="color:var(--orange)">→ IMPLICATION: ${esc(c.clinical_implication)}</div>` : ''}
+        </div>
+      `;
+    });
+    html += `</div></div>`;
+    rArea.innerHTML += html;
+  }
+
+  // QUESTIONS
+  const quests = bundle.open_questions || [];
+  if(quests.length > 0) {
+    let html = `<div class="res-card questions"><div class="rc-header"><span class="rc-title">Orphaned Intentions</span><span class="rc-badge" style="color:var(--cyan);border-color:var(--cyan)">ACTION REQ</span></div><div class="rc-body">`;
+    quests.forEach(q => {
+      html += `
+        <div class="item-box">
+          <div class="ib-head">
+            <span class="ib-type" style="color:var(--cyan)">GAP IDENTIFIED</span>
+            <span class="ib-sev">${esc(q.priority)}</span>
+          </div>
+          <div class="ib-desc">${esc(q.description)}</div>
+          ${q.source_quote ? `<div class="ib-meta" style="color:var(--txt2); font-style:italic">" ${esc(q.source_quote)} "</div>` : ''}
+        </div>
+      `;
+    });
+    html += `</div></div>`;
+    rArea.innerHTML += html;
+  }
+
+  // WATCH
+  const subs = bundle.subscriptions || [];
+  if(subs.length > 0) {
+    let html = `<div class="res-card watch"><div class="rc-header"><span class="rc-title">Watch Subscriptions</span><span class="rc-badge" style="color:var(--lime);border-color:var(--lime)">AUTO-GENERATED</span></div><div class="rc-body" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">`;
+    subs.forEach(s => {
+      html += `
+        <div class="item-box" style="margin:0">
+          <div class="ib-head">
+            <span class="ib-type" style="color:var(--lime)">FHIR HOOK</span>
+          </div>
+          <div class="ib-desc">${esc(s.reason)}</div>
+          <div class="ib-meta" style="color:var(--txt3)">${esc(s.criteria)}</div>
+        </div>
+      `;
+    });
+    html += `</div></div>`;
+    rArea.innerHTML += html;
+  }
+}
+</script>
+</body>
+</html>

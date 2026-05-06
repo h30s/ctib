@@ -1,0 +1,43 @@
+{
+  "name": "VitalsTrend-MCP",
+  "version": "1.0",
+  "description": "NEWS2 trajectory computation, subtle deterioration detection, and watch subscription generation",
+  "tools": [
+    {
+      "name": "compute_news2_trajectory",
+      "description": "Compute NEWS2 score at each timepoint using Royal College of Physicians scoring tables and analyze trajectory including rate-of-change and acceleration. Deterministic — no LLM.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "vital_observations": {"type": "array", "description": "FHIR Observation resources (vital-signs category)"},
+          "time_window_hours": {"type": "integer", "description": "Time window in hours for trajectory analysis", "default": 48}
+        },
+        "required": ["vital_observations"]
+      }
+    },
+    {
+      "name": "detect_subtle_deterioration",
+      "description": "LLM-powered interpretation of NEWS2 trajectory acceleration vs population archetype. Identifies emerging deterioration not visible from individual threshold checks.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "vital_observations": {"type": "array", "description": "FHIR Observation resources"},
+          "news2_result": {"type": "object", "description": "Output from compute_news2_trajectory"}
+        },
+        "required": ["vital_observations", "news2_result"]
+      }
+    },
+    {
+      "name": "generate_watch_subscriptions",
+      "description": "Generate FHIR Subscription resources for monitoring based on open questions and dissonance conflicts. Deterministic — no LLM.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "open_questions": {"type": "array", "description": "FHIR Task resources representing open clinical questions"},
+          "dissonance_conflicts": {"type": "array", "description": "Classified conflicts from DissonanceRegistry"}
+        },
+        "required": ["open_questions", "dissonance_conflicts"]
+      }
+    }
+  ]
+}

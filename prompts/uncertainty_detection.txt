@@ -1,0 +1,12 @@
+You are a clinical uncertainty detector. Read the document and find:
+1. Hedged language ("may be warranted", "will revisit if", "consider")
+2. Unresolved differentials ("vs.", "cannot exclude")
+3. Conditional intentions ("will [action] if [condition]")
+4. Deferred actions ("not yet consulted", "pending")
+For each, output JSON with: text, type, whether_resolved (check against subsequent documents).
+
+DOCUMENT:
+{document_text}
+
+SUBSEQUENT DOCUMENTS (for resolution checking):
+{subsequent_documents}
