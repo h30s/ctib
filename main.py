@@ -34,9 +34,11 @@ app = FastAPI(
     version="1.0.0",
 )
 
+# CORS: use ALLOWED_ORIGINS env var in production, defaults to * for dev
+_origins = os.getenv("ALLOWED_ORIGINS", "*").split(",")
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -69,6 +71,7 @@ async def health_check():
         "version": "1.0.0",
         "timestamp": datetime.now(timezone.utc).isoformat(),
         "gemini_configured": bool(os.getenv("GEMINI_API_KEY")),
+        "fhir_mode": "mock" if os.getenv("FHIR_MOCK_MODE", "").lower() in ("true", "1") else "live",
         "fhir_base": os.getenv("FHIR_BASE_URL", "http://localhost:8080/fhir"),
     }
 
@@ -128,11 +131,11 @@ async def run_ctib(
 
     except Exception as e:
         import traceback
+        traceback.print_exc()  # Log to server console, not to client
         raise HTTPException(
             status_code=500,
             detail={
                 "error": str(e),
-                "traceback": traceback.format_exc(),
             }
         )
 
@@ -241,12 +244,16 @@ async def serve_ui():
 # ─── Main ───
 
 def main():
-    port = int(os.getenv("CTIB_PORT", 9000))
+    # Railway injects PORT; CTIB_PORT is our own fallback
+    port = int(os.getenv("PORT", os.getenv("CTIB_PORT", 9000)))
+    fhir_mode = "MOCK (seed files)" if os.getenv("FHIR_MOCK_MODE", "").lower() in ("true", "1") else "LIVE"
     print(f"\n{'='*60}")
     print(f"  CTIB — Clinical Transition Intelligence Bus")
     print(f"  Dashboard: http://localhost:{port}")
     print(f"  API Docs:  http://localhost:{port}/docs")
     print(f"  Health:    http://localhost:{port}/api/health")
+    print(f"  FHIR Mode: {fhir_mode}")
+    print(f"  Gemini:    {'configured' if os.getenv('GEMINI_API_KEY') else 'NOT SET'}")
     print(f"{'='*60}\n")
     uvicorn.run(app, host="0.0.0.0", port=port)
 
