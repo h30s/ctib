@@ -19,6 +19,9 @@ dependencies = [
 [project.scripts]
 ctib = "main:main"
 
+[tool.setuptools.packages.find]
+include = ["agents*", "schemas*", "mcp_servers*"]
+
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
 testpaths = ["tests"]
