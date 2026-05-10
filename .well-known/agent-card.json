@@ -1,23 +1,25 @@
 {
   "name": "CTIB SwarmOrchestrator",
   "description": "Clinical Transition Intelligence Bus — Epistemic Handoff Agent. Orchestrates a swarm of 5 MCP constraint servers and 3 A2A agents to synthesize FHIR data + clinical notes into an EpistemicHandoffBundle for care transitions.",
-  "url": "https://ctib.onrender.com",
+  "version": "1.0.0",
   "provider": {
     "organization": "CTIB Project",
     "url": "https://github.com/h30s/ctib"
   },
-  "version": "1.0.0",
-  "protocolVersion": "0.2.1",
   "capabilities": {
     "streaming": false,
     "pushNotifications": false,
     "stateTransitionHistory": false
   },
+  "supportedInterfaces": [
+    {
+      "url": "https://ctib.onrender.com",
+      "protocolBinding": "JSONRPC",
+      "protocolVersion": "1.0"
+    }
+  ],
   "defaultInputModes": ["text/plain", "application/json"],
   "defaultOutputModes": ["application/json"],
-  "authentication": {
-    "schemes": ["none"]
-  },
   "skills": [
     {
       "id": "orchestrate-transition-analysis",
