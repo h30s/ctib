@@ -6,10 +6,20 @@
     "url": "https://github.com/h30s-soni/ctib"
   },
   "version": "1.0.0",
-  "capabilities": [
-    "orchestrate_transition_analysis",
-    "epistemic_handoff_bundle_generation",
-    "clinical_signal_synthesis"
+  "capabilities": {},
+  "skills": [
+    {
+      "name": "orchestrate_transition_analysis",
+      "description": "Orchestrates transition analysis"
+    },
+    {
+      "name": "epistemic_handoff_bundle_generation",
+      "description": "Generates epistemic handoff bundle"
+    },
+    {
+      "name": "clinical_signal_synthesis",
+      "description": "Synthesizes clinical signals"
+    }
   ],
   "schema_support": [
     "ClinicalSignalEnvelope-v1",
