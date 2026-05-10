@@ -9,16 +9,22 @@
   "capabilities": {},
   "skills": [
     {
+      "id": "orchestrate_transition_analysis",
       "name": "orchestrate_transition_analysis",
-      "description": "Orchestrates transition analysis"
+      "description": "Orchestrates transition analysis",
+      "tags": ["healthcare", "orchestration", "handoff"]
     },
     {
+      "id": "epistemic_handoff_bundle_generation",
       "name": "epistemic_handoff_bundle_generation",
-      "description": "Generates epistemic handoff bundle"
+      "description": "Generates epistemic handoff bundle",
+      "tags": ["fhir", "bundle", "synthesis"]
     },
     {
+      "id": "clinical_signal_synthesis",
       "name": "clinical_signal_synthesis",
-      "description": "Synthesizes clinical signals"
+      "description": "Synthesizes clinical signals",
+      "tags": ["clinical", "signals", "ai"]
     }
   ],
   "schema_support": [

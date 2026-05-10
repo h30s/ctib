@@ -222,7 +222,12 @@ async def ctib_agent_card():
         "description": "Clinical Transition Intelligence Bus — Epistemic Handoff Agent",
         "capabilities": {},
         "skills": [
-            {"name": "orchestrate_transition_analysis", "description": "Orchestrates transition analysis"}
+            {
+                "id": "orchestrate_transition_analysis",
+                "name": "orchestrate_transition_analysis",
+                "description": "Orchestrates transition analysis",
+                "tags": ["healthcare", "orchestration", "handoff"]
+            }
         ],
         "schema_support": [
             "ClinicalSignalEnvelope-v1",
