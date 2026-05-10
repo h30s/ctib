@@ -6,6 +6,9 @@
     "url": "https://github.com/h30s-soni/ctib"
   },
   "version": "1.0.0",
+  "supportedInterfaces": ["A2A", "REST"],
+  "defaultInputModes": ["json"],
+  "defaultOutputModes": ["json"],
   "capabilities": {},
   "skills": [
     {

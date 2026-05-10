@@ -220,6 +220,9 @@ async def ctib_agent_card():
     return {
         "name": "CTIB SwarmOrchestrator",
         "description": "Clinical Transition Intelligence Bus — Epistemic Handoff Agent",
+        "supportedInterfaces": ["A2A", "REST"],
+        "defaultInputModes": ["json"],
+        "defaultOutputModes": ["json"],
         "capabilities": {},
         "skills": [
             {
