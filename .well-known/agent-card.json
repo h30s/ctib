@@ -1,91 +1,51 @@
 {
   "name": "CTIB SwarmOrchestrator",
   "description": "Clinical Transition Intelligence Bus — Epistemic Handoff Agent. Orchestrates a swarm of 5 MCP constraint servers and 3 A2A agents to synthesize FHIR data + clinical notes into an EpistemicHandoffBundle for care transitions.",
+  "url": "https://ctib.onrender.com",
   "provider": {
     "organization": "CTIB Project",
-    "url": "https://github.com/h30s-soni/ctib"
+    "url": "https://github.com/h30s/ctib"
   },
   "version": "1.0.0",
-  "supportedInterfaces": ["A2A", "REST"],
-  "defaultInputModes": ["json"],
-  "defaultOutputModes": ["json"],
-  "capabilities": {},
+  "protocolVersion": "0.2.1",
+  "capabilities": {
+    "streaming": false,
+    "pushNotifications": false,
+    "stateTransitionHistory": false
+  },
+  "defaultInputModes": ["text/plain", "application/json"],
+  "defaultOutputModes": ["application/json"],
+  "authentication": {
+    "schemes": ["none"]
+  },
   "skills": [
     {
-      "id": "orchestrate_transition_analysis",
-      "name": "orchestrate_transition_analysis",
-      "description": "Orchestrates transition analysis",
-      "tags": ["healthcare", "orchestration", "handoff"]
+      "id": "orchestrate-transition-analysis",
+      "name": "Orchestrate Transition Analysis",
+      "description": "Runs the full CTIB Golden Path pipeline: SHARP context → FHIR fetch → 5-server MCP swarm → LLM synthesis → EpistemicHandoffBundle assembly → A2A delivery to receiving agent.",
+      "tags": ["healthcare", "orchestration", "handoff", "fhir", "clinical"],
+      "examples": [
+        "Run a care transition analysis for patient pt-maria-chen-001",
+        "Generate an epistemic handoff bundle for ICU to step-down transfer"
+      ]
     },
     {
-      "id": "epistemic_handoff_bundle_generation",
-      "name": "epistemic_handoff_bundle_generation",
-      "description": "Generates epistemic handoff bundle",
-      "tags": ["fhir", "bundle", "synthesis"]
+      "id": "epistemic-handoff-bundle-generation",
+      "name": "Epistemic Handoff Bundle Generation",
+      "description": "Assembles a FHIR-native EpistemicHandoffBundle containing trajectory signals, orphaned intentions, temporal dissonance conflicts, and watch subscriptions.",
+      "tags": ["fhir", "bundle", "synthesis", "clinical"],
+      "examples": [
+        "Assemble an epistemic handoff bundle from clinical signals"
+      ]
     },
     {
-      "id": "clinical_signal_synthesis",
-      "name": "clinical_signal_synthesis",
-      "description": "Synthesizes clinical signals",
-      "tags": ["clinical", "signals", "ai"]
+      "id": "clinical-signal-synthesis",
+      "name": "Clinical Signal Synthesis",
+      "description": "Synthesizes unstructured clinical narratives and structured FHIR data into actionable clinical signals using LLM trajectory analysis.",
+      "tags": ["nlp", "synthesis", "signals", "ai"],
+      "examples": [
+        "Synthesize clinical signals from progress notes and lab results"
+      ]
     }
-  ],
-  "schema_support": [
-    "ClinicalSignalEnvelope-v1",
-    "EpistemicHandoffBundle-v1",
-    "SHARPContextToken-v1"
-  ],
-  "sharp_required": true,
-  "mcp_servers": [
-    {
-      "name": "PharmSafety-MCP",
-      "tools": ["reconcile_medications", "detect_interactions"],
-      "port": 9001
-    },
-    {
-      "name": "VitalsTrend-MCP",
-      "tools": ["compute_news2_trajectory", "detect_subtle_deterioration", "generate_watch_subscriptions"],
-      "port": 9002
-    },
-    {
-      "name": "NarrativeSemant-MCP",
-      "tools": ["extract_clinical_assertions", "identify_open_questions"],
-      "port": 9003
-    },
-    {
-      "name": "PopulationSignal-MCP",
-      "tools": ["match_trajectory_archetype"],
-      "port": 9004
-    },
-    {
-      "name": "Dissonance-MCP",
-      "tools": ["detect_cross_signal_conflicts"],
-      "port": 9005
-    }
-  ],
-  "a2a_agents": [
-    {
-      "name": "ContextBrokerAgent",
-      "type": "deterministic",
-      "llm_required": false,
-      "role": "Privacy spine — SHARP escrow and bundle assembly"
-    },
-    {
-      "name": "SwarmOrchestratorAgent",
-      "type": "hybrid",
-      "llm_required": true,
-      "role": "Pipeline director — coordinates MCP swarm and LLM synthesis"
-    },
-    {
-      "name": "TransitionDeliveryAgent",
-      "type": "deterministic",
-      "llm_required": false,
-      "role": "A2A courier — delivers bundles to receiving agents"
-    }
-  ],
-  "url": "http://localhost:9000",
-  "authentication": {
-    "type": "SHARP",
-    "version": "1.0"
-  }
+  ]
 }

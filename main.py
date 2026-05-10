@@ -220,24 +220,25 @@ async def ctib_agent_card():
     return {
         "name": "CTIB SwarmOrchestrator",
         "description": "Clinical Transition Intelligence Bus — Epistemic Handoff Agent",
-        "supportedInterfaces": ["A2A", "REST"],
-        "defaultInputModes": ["json"],
-        "defaultOutputModes": ["json"],
-        "capabilities": {},
+        "url": os.getenv("RENDER_EXTERNAL_URL", f"http://localhost:{os.getenv('CTIB_PORT', 9000)}"),
+        "version": "1.0.0",
+        "protocolVersion": "0.2.1",
+        "capabilities": {
+            "streaming": False,
+            "pushNotifications": False,
+            "stateTransitionHistory": False,
+        },
+        "defaultInputModes": ["text/plain", "application/json"],
+        "defaultOutputModes": ["application/json"],
+        "authentication": {"schemes": ["none"]},
         "skills": [
             {
-                "id": "orchestrate_transition_analysis",
-                "name": "orchestrate_transition_analysis",
-                "description": "Orchestrates transition analysis",
-                "tags": ["healthcare", "orchestration", "handoff"]
+                "id": "orchestrate-transition-analysis",
+                "name": "Orchestrate Transition Analysis",
+                "description": "Runs the full CTIB Golden Path pipeline for care transitions.",
+                "tags": ["healthcare", "orchestration", "handoff", "fhir"],
             }
         ],
-        "schema_support": [
-            "ClinicalSignalEnvelope-v1",
-            "EpistemicHandoffBundle-v1",
-        ],
-        "sharp_required": True,
-        "url": f"http://localhost:{os.getenv('CTIB_PORT', 9000)}",
     }
 
 
