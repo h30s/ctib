@@ -106,3 +106,8 @@ Three critical findings the system surfaces:
 ## License
 
 Built for the **Agents Assemble** hackathon on Prompt Opinion Marketplace.
+
+## Team 
+
+Himanshu Soni
+Tushar Gupta
