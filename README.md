@@ -107,7 +107,7 @@ Three critical findings the system surfaces:
 
 Built for the **Agents Assemble** hackathon on Prompt Opinion Marketplace.
 
-## Team 
+## Team Members
 
 Himanshu Soni
 Tushar Gupta
